@@ -1,0 +1,344 @@
+.silverpen-stage {
+  --ink: #171b35;
+  --ink-soft: #282d4d;
+  --ink-muted: #70738b;
+  --paper: #efe9dc;
+  --paper-deep: #e3dbc9;
+  --brass: #dfb762;
+  --coral: #e87961;
+  --cyan: #7fced0;
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 82% 12%, rgba(255, 255, 255, 0.7), transparent 25%),
+    linear-gradient(135deg, #e8e1d4 0%, #f4efe6 48%, #ded6c5 100%);
+  font-family: "DM Sans", "Avenir Next", sans-serif;
+}
+
+.silverpen-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.36;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(28, 31, 51, 0.12) 0.6px, transparent 0.6px);
+  background-size: 5px 5px;
+  mix-blend-mode: multiply;
+}
+
+.silverpen-paper {
+  position: absolute;
+  inset: 7.2% 5.6% 8%;
+  overflow: hidden;
+  border: 1px solid rgba(60, 55, 42, 0.14);
+  border-radius: 10px;
+  background:
+    linear-gradient(rgba(132, 148, 178, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(132, 148, 178, 0.12) 1px, transparent 1px),
+    var(--paper);
+  background-size: 28px 28px;
+  box-shadow: 0 22px 50px rgba(56, 51, 39, 0.14), inset 0 0 90px rgba(119, 101, 70, 0.08);
+}
+
+.silverpen-paper::after {
+  content: "";
+  position: absolute;
+  inset: 28px;
+  border: 1px solid rgba(93, 102, 129, 0.12);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.paper-margin {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 10.5%;
+  width: 1px;
+  background: rgba(214, 102, 87, 0.24);
+}
+
+.paper-line {
+  position: absolute;
+  left: 13%;
+  height: 2px;
+  border-radius: 3px;
+  background: rgba(64, 68, 99, 0.14);
+}
+
+.paper-stroke {
+  position: absolute;
+  width: 190px;
+  height: 58px;
+  border: 2px solid rgba(40, 95, 102, 0.35);
+  border-color: rgba(40, 95, 102, 0.35) transparent transparent;
+  border-radius: 50%;
+  transform: rotate(-12deg);
+}
+
+.silverpen-toolbar {
+  position: absolute;
+  width: min(892px, calc(100vw - 52px));
+  min-height: 344px;
+  border: 1px solid rgba(224, 226, 231, 0.2);
+  border-radius: 23px;
+  background:
+    linear-gradient(145deg, rgba(48, 53, 81, 0.98), rgba(21, 25, 51, 0.99) 58%, rgba(15, 18, 39, 1));
+  box-shadow:
+    0 35px 42px rgba(36, 35, 40, 0.31),
+    0 7px 0 rgba(13, 16, 33, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.48);
+  z-index: 3;
+  user-select: none;
+  animation: silverpen-settle 520ms cubic-bezier(.2,.75,.25,1) both;
+}
+
+.silverpen-toolbar::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+.silverpen-grip {
+  cursor: grab;
+  touch-action: none;
+}
+
+.silverpen-grip:active {
+  cursor: grabbing;
+}
+
+.silverpen-divider {
+  width: 1px;
+  align-self: stretch;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,.15), transparent);
+}
+
+.silverpen-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  color: rgba(229, 231, 238, 0.78);
+  transition: transform 160ms ease, opacity 160ms ease, background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.silverpen-button:hover {
+  color: #fff7e7;
+  border-color: rgba(255,255,255,.13);
+  background-color: rgba(255,255,255,.08);
+}
+
+.silverpen-button:active {
+  transform: scale(.95);
+}
+
+.silverpen-pen-card {
+  position: relative;
+  overflow: hidden;
+  flex: 1 1 0;
+  min-width: 0;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 15px;
+  background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.015));
+  transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
+}
+
+.silverpen-pen-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255,255,255,.28);
+  background-color: rgba(255,255,255,.09);
+}
+
+.silverpen-pen-card.is-selected {
+  border-color: var(--coral);
+  background: linear-gradient(180deg, rgba(232,121,97,.22), rgba(255,255,255,.035));
+  box-shadow: 0 0 0 2px rgba(232,121,97,.15), 0 12px 20px rgba(0,0,0,.18);
+}
+
+.silverpen-pen {
+  position: relative;
+  width: 42px;
+  height: 104px;
+  transform: rotate(34deg);
+  transform-origin: 50% 64%;
+  filter: drop-shadow(5px 9px 4px rgba(0,0,0,.26));
+}
+
+.silverpen-pen-body {
+  position: absolute;
+  left: 7px;
+  top: 14px;
+  width: 28px;
+  height: 71px;
+  border-radius: 7px 7px 5px 5px;
+  background: var(--pen-body);
+  box-shadow: inset 5px 0 5px rgba(255,255,255,.18), inset -5px 0 6px rgba(0,0,0,.24);
+}
+
+.silverpen-pen-body::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 7px;
+  width: 3px;
+  height: 43px;
+  border-radius: 4px;
+  background: rgba(255,255,255,.35);
+  filter: blur(.4px);
+}
+
+.silverpen-pen-cap {
+  position: absolute;
+  top: 1px;
+  left: 6px;
+  width: 30px;
+  height: 21px;
+  border-radius: 8px 8px 3px 3px;
+  background: var(--pen-cap);
+  box-shadow: inset 4px 0 5px rgba(255,255,255,.2), inset -4px 0 5px rgba(0,0,0,.26);
+}
+
+.silverpen-pen-band {
+  position: absolute;
+  left: 5px;
+  top: 71px;
+  width: 32px;
+  height: 9px;
+  border-top: 2px solid rgba(255,255,255,.65);
+  border-bottom: 2px solid rgba(95, 67, 43, .65);
+  background: linear-gradient(90deg, #a37442, #f7d993 46%, #a56d37);
+  box-shadow: 0 2px 2px rgba(0,0,0,.25);
+}
+
+.silverpen-pen-tip {
+  position: absolute;
+  left: 12px;
+  top: 80px;
+  width: 18px;
+  height: 28px;
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+  background: linear-gradient(90deg, #89909e, #eef0ea 48%, #656c79);
+}
+
+.silverpen-pen-tip::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  bottom: 0;
+  width: 4px;
+  height: 9px;
+  border-radius: 0 0 4px 4px;
+  background: #252939;
+}
+
+.silverpen-pen.highlighter .silverpen-pen-body {
+  height: 66px;
+  top: 18px;
+  border-radius: 3px 3px 2px 2px;
+}
+
+.silverpen-pen.highlighter .silverpen-pen-cap {
+  height: 18px;
+  top: 3px;
+  border-radius: 3px;
+}
+
+.silverpen-pen.highlighter .silverpen-pen-band {
+  top: 70px;
+}
+
+.silverpen-pen.highlighter .silverpen-pen-tip {
+  top: 79px;
+  width: 24px;
+  left: 9px;
+  height: 18px;
+  clip-path: polygon(8% 0, 92% 0, 72% 100%, 28% 100%);
+  border-radius: 0 0 3px 3px;
+  background: linear-gradient(90deg, #8095a5, #e4edf0 50%, #687887);
+}
+
+.silverpen-pen.pencil .silverpen-pen-body {
+  top: 20px;
+  height: 58px;
+  width: 24px;
+  left: 9px;
+  border-radius: 3px;
+  background: repeating-linear-gradient(90deg, #bb7456 0 5px, #d38c67 5px 9px);
+}
+
+.silverpen-pen.pencil .silverpen-pen-cap {
+  top: 13px;
+  width: 24px;
+  left: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: #d0d4dc;
+}
+
+.silverpen-pen.pencil .silverpen-pen-band {
+  top: 73px;
+  width: 28px;
+  left: 7px;
+}
+
+.silverpen-pen.pencil .silverpen-pen-tip {
+  top: 79px;
+  left: 11px;
+  width: 20px;
+  height: 28px;
+  background: linear-gradient(90deg, #bd9674, #ebd5ae 50%, #a77657);
+}
+
+.silverpen-range {
+  accent-color: var(--coral);
+}
+
+.silverpen-menu {
+  position: absolute;
+  top: 67px;
+  right: 22px;
+  width: 196px;
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 12px;
+  background: rgba(25, 29, 56, .98);
+  box-shadow: 0 20px 32px rgba(0,0,0,.35);
+  animation: silverpen-menu-in 160ms ease both;
+  z-index: 8;
+}
+
+.silverpen-hint {
+  animation: silverpen-pulse 2200ms ease-in-out infinite;
+}
+
+@keyframes silverpen-settle {
+  from { opacity: 0; transform: translateY(12px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes silverpen-menu-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes silverpen-pulse {
+  0%, 100% { opacity: .66; }
+  50% { opacity: 1; }
+}
+
+@media (max-width: 760px) {
+  .silverpen-paper { inset: 4% 3% 5%; }
+  .silverpen-toolbar {
+    min-height: 0;
+    width: calc(100vw - 30px);
+  }
+  .silverpen-toolbar .pen-label { display: none; }
+  .silverpen-pen { transform: rotate(34deg) scale(.82); }
+}
