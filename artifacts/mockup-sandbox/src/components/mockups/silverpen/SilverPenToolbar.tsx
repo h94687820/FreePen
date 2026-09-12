@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } f
 import {
   Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   CircleHelp,
   Eraser,
   Grip,
@@ -20,7 +22,7 @@ import {
 
 import "./_silverpen.css";
 
-type PenKind = "ink" | "highlighter" | "pencil";
+type PenKind = "ink" | "highlighter" | "pencil" | "fountain" | "technical" | "brush" | "calligraphy";
 
 type PenSpec = {
   kind: PenKind;
@@ -34,6 +36,10 @@ const pens: PenSpec[] = [
   { kind: "ink", label: "Precision", meta: "0.4 mm", body: "#cf6559", cap: "#a94345" },
   { kind: "highlighter", label: "Marker", meta: "Soft edge", body: "#e2b95d", cap: "#b9843e" },
   { kind: "pencil", label: "Graphite", meta: "HB", body: "#bd7258", cap: "#8f4e43" },
+  { kind: "fountain", label: "Fountain", meta: "Pressure ink", body: "#4b6fb1", cap: "#304d88" },
+  { kind: "technical", label: "Technical", meta: "0.2 mm", body: "#778394", cap: "#3b455c" },
+  { kind: "brush", label: "Brush", meta: "Flexible tip", body: "#b86b86", cap: "#713e68" },
+  { kind: "calligraphy", label: "Calligraphy", meta: "Chisel edge", body: "#8b6dba", cap: "#554078" },
 ];
 
 const recentColors = [
@@ -86,13 +92,17 @@ function ToolButton({
 export function SilverPenToolbar() {
   const workspaceRef = useRef<HTMLDivElement>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
+  const penScrollerRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef({ active: false, offsetX: 0, offsetY: 0 });
+  const penSwipeRef = useRef({ active: false, startX: 0, startScrollLeft: 0, moved: false });
+  const suppressPenClickRef = useRef(false);
   const [position, setPosition] = useState({ x: 190, y: 222 });
   const [activePen, setActivePen] = useState<PenKind>("ink");
   const [color, setColor] = useState("#e87961");
   const [thickness, setThickness] = useState(4);
   const [menuOpen, setMenuOpen] = useState(false);
   const [feedback, setFeedback] = useState("Precision pen ready");
+  const [penDragging, setPenDragging] = useState(false);
 
   useEffect(() => {
     const handleMove = (event: PointerEvent) => {
@@ -136,6 +146,46 @@ export function SilverPenToolbar() {
   const choosePen = (pen: PenSpec) => {
     setActivePen(pen.kind);
     setFeedback(`${pen.label} selected · ${pen.meta}`);
+  };
+
+  const beginPenSwipe = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const scroller = penScrollerRef.current;
+    if (!scroller || (event.pointerType === "mouse" && event.button !== 0)) return;
+    penSwipeRef.current = {
+      active: true,
+      startX: event.clientX,
+      startScrollLeft: scroller.scrollLeft,
+      moved: false,
+    };
+    setPenDragging(false);
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  };
+
+  const movePenSwipe = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const scroller = penScrollerRef.current;
+    if (!scroller || !penSwipeRef.current.active) return;
+    const delta = event.clientX - penSwipeRef.current.startX;
+    if (Math.abs(delta) > 6) {
+      penSwipeRef.current.moved = true;
+      setPenDragging(true);
+    }
+    if (penSwipeRef.current.moved) {
+      scroller.scrollLeft = penSwipeRef.current.startScrollLeft - delta;
+    }
+  };
+
+  const endPenSwipe = () => {
+    if (!penSwipeRef.current.active) return;
+    if (penSwipeRef.current.moved) {
+      suppressPenClickRef.current = true;
+      setFeedback("Swipe to browse the instrument set");
+    }
+    penSwipeRef.current.active = false;
+    setPenDragging(false);
+  };
+
+  const scrollPens = (amount: number) => {
+    penScrollerRef.current?.scrollBy({ left: amount, behavior: "smooth" });
   };
 
   const chooseColor = (nextColor: string, label: string) => {
@@ -226,25 +276,61 @@ export function SilverPenToolbar() {
           </div>
 
           <div className="mt-5 flex gap-4">
-            <div className="flex min-w-0 flex-1 gap-3">
-              {pens.map((pen) => (
-                <button
-                  key={pen.kind}
-                  type="button"
-                  className={`silverpen-pen-card ${activePen === pen.kind ? "is-selected" : ""}`}
-                  onClick={() => choosePen(pen)}
-                  aria-pressed={activePen === pen.kind}
-                >
-                  <div className="flex h-[168px] items-center justify-center pt-2">
-                    <PenVisual pen={pen} />
-                  </div>
-                  <div className="pen-label border-t border-white/10 px-3 py-2 text-left">
-                    <p className="text-[11px] font-bold tracking-wide text-[#f4e8ce]">{pen.label}</p>
-                    <p className="mt-0.5 font-['Space_Mono'] text-[9px] uppercase tracking-wider text-[#999caf]">{pen.meta}</p>
-                  </div>
-                  {activePen === pen.kind && <span className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#e87961] text-[#21182b]"><Check size={12} strokeWidth={3} /></span>}
-                </button>
-              ))}
+            <div className="silverpen-pen-carousel relative min-w-0 flex-1">
+              <button
+                type="button"
+                aria-label="Previous pens"
+                className="silverpen-carousel-arrow left-1"
+                onPointerDown={(event) => event.stopPropagation()}
+                onClick={() => scrollPens(-220)}
+              >
+                <ChevronLeft size={15} />
+              </button>
+              <div
+                ref={penScrollerRef}
+                className={`silverpen-pen-scroller flex gap-3 pb-1 ${penDragging ? "is-dragging" : ""}`}
+                onPointerDown={beginPenSwipe}
+                onPointerMove={movePenSwipe}
+                onPointerUp={endPenSwipe}
+                onPointerCancel={endPenSwipe}
+              >
+                {pens.map((pen) => (
+                  <button
+                    key={pen.kind}
+                    type="button"
+                    className={`silverpen-pen-card ${activePen === pen.kind ? "is-selected" : ""}`}
+                    onClick={() => {
+                      if (suppressPenClickRef.current) {
+                        suppressPenClickRef.current = false;
+                        return;
+                      }
+                      choosePen(pen);
+                    }}
+                    aria-pressed={activePen === pen.kind}
+                  >
+                    <div className="flex h-[168px] items-center justify-center pt-2">
+                      <PenVisual pen={pen} />
+                    </div>
+                    <div className="pen-label border-t border-white/10 px-3 py-2 text-left">
+                      <p className="text-[11px] font-bold tracking-wide text-[#f4e8ce]">{pen.label}</p>
+                      <p className="mt-0.5 font-['Space_Mono'] text-[9px] uppercase tracking-wider text-[#999caf]">{pen.meta}</p>
+                    </div>
+                    {activePen === pen.kind && <span className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#e87961] text-[#21182b]"><Check size={12} strokeWidth={3} /></span>}
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                aria-label="Next pens"
+                className="silverpen-carousel-arrow right-1"
+                onPointerDown={(event) => event.stopPropagation()}
+                onClick={() => scrollPens(220)}
+              >
+                <ChevronRight size={15} />
+              </button>
+              <div className="silverpen-swipe-hint">
+                <Grip size={11} /> Swipe to browse
+              </div>
             </div>
 
             <div className="w-[188px] shrink-0 rounded-[15px] border border-white/10 bg-[#0f1330]/65 p-3">

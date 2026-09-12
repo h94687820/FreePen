@@ -142,8 +142,8 @@
 .silverpen-pen-card {
   position: relative;
   overflow: hidden;
-  flex: 1 1 0;
-  min-width: 0;
+  flex: 0 0 154px;
+  min-width: 154px;
   border: 1px solid rgba(255,255,255,.12);
   border-radius: 15px;
   background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.015));
@@ -160,6 +160,67 @@
   border-color: var(--coral);
   background: linear-gradient(180deg, rgba(232,121,97,.22), rgba(255,255,255,.035));
   box-shadow: 0 0 0 2px rgba(232,121,97,.15), 0 12px 20px rgba(0,0,0,.18);
+}
+
+.silverpen-pen-carousel {
+  min-width: 0;
+  padding-inline: 4px;
+}
+
+.silverpen-pen-scroller {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  cursor: grab;
+  touch-action: pan-x;
+  mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+}
+
+.silverpen-pen-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.silverpen-pen-scroller.is-dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+.silverpen-carousel-arrow {
+  position: absolute;
+  top: 45%;
+  z-index: 4;
+  display: flex;
+  height: 25px;
+  width: 25px;
+  transform: translateY(-50%);
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  color: #f4e8ce;
+  background: rgba(26, 30, 60, .88);
+  box-shadow: 0 5px 12px rgba(0,0,0,.24);
+  transition: transform 160ms ease, background-color 160ms ease;
+}
+
+.silverpen-carousel-arrow:hover {
+  transform: translateY(-50%) scale(1.08);
+  background: rgba(232, 121, 97, .9);
+}
+
+.silverpen-swipe-hint {
+  position: absolute;
+  right: 10px;
+  bottom: -18px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: rgba(211, 214, 224, .5);
+  font-family: "Space Mono", monospace;
+  font-size: 8px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
 }
 
 .silverpen-pen {
@@ -294,6 +355,112 @@
   width: 20px;
   height: 28px;
   background: linear-gradient(90deg, #bd9674, #ebd5ae 50%, #a77657);
+}
+
+.silverpen-pen.fountain .silverpen-pen-body {
+  left: 8px;
+  width: 26px;
+  height: 69px;
+  border-radius: 11px 11px 5px 5px;
+  background: linear-gradient(90deg, #304b88, #668bd0 45%, #293d72);
+}
+
+.silverpen-pen.fountain .silverpen-pen-cap {
+  left: 7px;
+  width: 28px;
+  height: 25px;
+  border-radius: 10px 10px 3px 3px;
+  background: linear-gradient(90deg, #233664, #5474bb 50%, #20325b);
+}
+
+.silverpen-pen.fountain .silverpen-pen-band {
+  top: 73px;
+}
+
+.silverpen-pen.fountain .silverpen-pen-tip {
+  top: 82px;
+  left: 10px;
+  width: 22px;
+  height: 25px;
+  background: linear-gradient(90deg, #c5a15c, #fff0b5 48%, #9e7134);
+}
+
+.silverpen-pen.technical .silverpen-pen-body {
+  left: 11px;
+  width: 20px;
+  height: 72px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #394659, #aeb8c5 48%, #4b586e);
+}
+
+.silverpen-pen.technical .silverpen-pen-cap {
+  left: 10px;
+  width: 22px;
+  height: 16px;
+  border-radius: 4px 4px 2px 2px;
+  background: linear-gradient(90deg, #2a3345, #7d8ca0 52%, #222a38);
+}
+
+.silverpen-pen.technical .silverpen-pen-band {
+  left: 9px;
+  width: 24px;
+  top: 70px;
+}
+
+.silverpen-pen.technical .silverpen-pen-tip {
+  left: 13px;
+  width: 16px;
+  height: 30px;
+  background: linear-gradient(90deg, #6f7d8c, #eef4ef 52%, #4c5865);
+}
+
+.silverpen-pen.brush .silverpen-pen-body {
+  left: 7px;
+  width: 28px;
+  height: 67px;
+  border-radius: 12px 12px 5px 5px;
+  background: linear-gradient(90deg, #713e68, #d58ba9 48%, #713e68);
+}
+
+.silverpen-pen.brush .silverpen-pen-cap {
+  left: 6px;
+  width: 30px;
+  height: 20px;
+  border-radius: 10px 10px 3px 3px;
+}
+
+.silverpen-pen.brush .silverpen-pen-tip {
+  top: 77px;
+  left: 8px;
+  width: 28px;
+  height: 32px;
+  clip-path: polygon(18% 0, 82% 0, 62% 100%, 38% 100%);
+  border-radius: 0 0 12px 12px;
+  background: linear-gradient(90deg, #1f253c, #404968 46%, #171b2d);
+}
+
+.silverpen-pen.calligraphy .silverpen-pen-body {
+  left: 8px;
+  width: 27px;
+  height: 67px;
+  border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(90deg, #554078, #a88bd1 48%, #493569);
+}
+
+.silverpen-pen.calligraphy .silverpen-pen-cap {
+  left: 7px;
+  width: 29px;
+  height: 18px;
+  border-radius: 5px 5px 2px 2px;
+}
+
+.silverpen-pen.calligraphy .silverpen-pen-tip {
+  top: 77px;
+  left: 8px;
+  width: 27px;
+  height: 30px;
+  clip-path: polygon(26% 0, 74% 0, 100% 100%, 0 100%);
+  background: linear-gradient(90deg, #777f99, #f0f2e9 50%, #535c77);
 }
 
 .silverpen-range {
